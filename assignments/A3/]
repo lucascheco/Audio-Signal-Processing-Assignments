@@ -1,0 +1,35 @@
+import sys
+sys.path.append('../../software/models/')
+from dftModel import dftAnal, dftSynth
+from scipy.signal import get_window
+
+import A3Part4
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy.fft as fft
+import math
+
+def genMultiSines(freq, ts):
+    total = 0.0
+    length = len(freq)
+
+    for i in range(length):
+        total += A3Part4.genSine(1.0, freq[i], 0.0, 44100.0, ts)
+    
+    ans = total
+    return ans
+
+
+freq = [40.0, 100.0, 200.0, 1000.0]
+
+sig  = genMultiSines(freq, 0.01)
+
+length = len(sig)
+
+X = fft.fft(sig)
+SIG = X[:length//2 + 1]
+
+N = pow(2, math.ceil(np.log10(length)/np.log10(2)))
+ 
+yfilter = A3Part4.suppressFreqDFTmodel(sig, 44100.0, int(N**2))
+
